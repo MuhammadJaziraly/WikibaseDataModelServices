@@ -1,0 +1,58 @@
+name: PHP Tests
+
+on:
+    push:
+        branches: [ "master" ]
+    pull_request:
+        branches: [ "master" ]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php-version: ["7.2", "7.3", "7.4", "8.0"]
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  coverage: none # Disable Xdebug by default for better performance
+
+            - name: Validate composer.json
+              run: composer validate --strict
+
+            - name: Cache Composer packages
+              id: composer-cache
+              uses: actions/cache@v3
+              with:
+                  path: vendor
+                  key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress
+
+            - name: Enable coverage for PHP < 8.0
+              if: "matrix.php-version < '8.0'"
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  coverage: xdebug
+
+            - name: Run test suite
+              run: composer run-script ci
+
+            - name: IRC notification
+              uses: Gottox/irc-message-action@v2
+              if: always()
+              with:
+                  channel: '#wikidata-feed'
+                  nickname: github-actions
+                  message: "${{ github.repository }}/${{ github.ref_name }}/${{ github.sha }} : ${{ github.actor }} ${{ job.status }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  server: irc.libera.chat

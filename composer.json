@@ -25,18 +25,23 @@
 	},
 	"require": {
 		"php": ">=7.2",
-		"wikibase/data-model": "~9.0|~8.0",
+		"wikibase/data-model": "^9.0",
 		"data-values/data-values": "^3.1.0",
 		"diff/diff": "~3.2",
 		"wikimedia/assert": "~0.2.2|~0.3.0|~0.4.0|~0.5.0"
 	},
 	"require-dev": {
 		"phpmd/phpmd": "~2.3",
-		"phpunit/phpunit": "~8.0"
+		"phpunit/phpunit": "^8.5.14"
 	},
 	"autoload": {
 		"psr-4": {
 			"Wikibase\\DataModel\\Services\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Wikibase\\DataModel\\Services\\Tests\\": "tests/unit/"
 		}
 	},
 	"extra": {
@@ -48,7 +53,7 @@
 		"test": [
 			"composer validate --no-interaction",
 			"@cs",
-			"phpunit --coverage-php /dev/null"
+			"phpunit"
 		],
 		"cs": [
 			"phpmd src/,tests/unit/ text phpmd.xml"
@@ -56,5 +61,10 @@
 		"ci": [
 			"@test"
 		]
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/package-versions-deprecated": true
+		}
 	}
 }

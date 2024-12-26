@@ -31,10 +31,18 @@ class ByPropertyIdGrouperTest extends TestCase {
 
 	public static function validConstructorArgumentProvider() {
 		return [
-			[ fn () => [] ],
-			[ fn ( self $self ) => [ $self->getPropertyIdProviderMock( 'P1' ) ] ],
-			[ fn () => new ArrayObject() ],
-			[ fn ( self $self ) => new ArrayObject( [ $self->getPropertyIdProviderMock( 'P1' ) ] ) ],
+			[ function() {
+				return [];
+			} ],
+			[ function( self $self ) {
+				return [ $self->getPropertyIdProviderMock( 'P1' ) ];
+			} ],
+			[ function() {
+				return new ArrayObject();
+			} ],
+			[ function( self $self ) {
+				return new ArrayObject( [ $self->getPropertyIdProviderMock( 'P1' ) ] );
+			} ],
 		];
 	}
 
@@ -61,15 +69,19 @@ class ByPropertyIdGrouperTest extends TestCase {
 		$cases = [];
 
 		$cases['empty list'] = [
-			fn () => [],
+			function() {
+				return [];
+			},
 			[],
 		];
 
 		$cases['some property ids'] = [
-			fn ( self $self ) => [
-				$self->getPropertyIdProviderMock( 'P42' ),
-				$self->getPropertyIdProviderMock( 'P23' ),
-			],
+			function( self $self ) {
+				return [
+					$self->getPropertyIdProviderMock( 'P42' ),
+					$self->getPropertyIdProviderMock( 'P23' ),
+				];
+			},
 			[
 				new NumericPropertyId( 'P42' ),
 				new NumericPropertyId( 'P23' ),
@@ -77,7 +89,9 @@ class ByPropertyIdGrouperTest extends TestCase {
 		];
 
 		$cases['duplicate property ids'] = [
-			fn ( self $self ) => $self->getPropertyIdProviders(),
+			function( self $self ) {
+				return $self->getPropertyIdProviders();
+			},
 			[
 				new NumericPropertyId( 'P42' ),
 				new NumericPropertyId( 'P23' ),
@@ -104,13 +118,17 @@ class ByPropertyIdGrouperTest extends TestCase {
 		$cases = [];
 
 		$cases[] = [
-			fn ( self $self ) => $self->getPropertyIdProviders(),
+			function( self $self ) {
+				return $self->getPropertyIdProviders();
+			},
 			'P42',
 			[ 'abc', 'jkl' ],
 		];
 
 		$cases[] = [
-			fn ( self $self ) => $self->getPropertyIdProviders(),
+			function( self $self ) {
+				return $self->getPropertyIdProviders();
+			},
 			'P23',
 			[ 'def' ],
 		];
@@ -139,11 +157,41 @@ class ByPropertyIdGrouperTest extends TestCase {
 	public static function provideHasPropertyId() {
 		$cases = [];
 
-		$cases[] = [ fn ( self $self ) => $self->getPropertyIdProviders(), 'P42', true ];
-		$cases[] = [ fn ( self $self ) => $self->getPropertyIdProviders(), 'P23', true ];
-		$cases[] = [ fn ( self $self ) => $self->getPropertyIdProviders(), 'P15', true ];
-		$cases[] = [ fn ( self $self ) => $self->getPropertyIdProviders(), 'P10', true ];
-		$cases[] = [ fn ( self $self ) => $self->getPropertyIdProviders(), 'P11', false ];
+		$cases[] = [
+			function( self $self ) {
+				return $self->getPropertyIdProviders();
+			},
+			'P42',
+			true
+		];
+		$cases[] = [
+			function( self $self ) {
+				return $self->getPropertyIdProviders();
+			},
+			'P23',
+			true
+		];
+		$cases[] = [
+			function( self $self ) {
+				return $self->getPropertyIdProviders();
+			},
+			'P15',
+			true
+		];
+		$cases[] = [
+			function( self $self ) {
+				return $self->getPropertyIdProviders();
+			},
+			'P10',
+			true
+		];
+		$cases[] = [
+			function( self $self ) {
+				return $self->getPropertyIdProviders();
+			},
+			'P11',
+			false
+		];
 
 		return $cases;
 	}
